@@ -68,11 +68,11 @@ int main(int argc, char** argv) {
 
     // 主线程运行HTTP服务器
     
-    ioc.stop();
-
+    
     if (grpc_thread.joinable()) {
       grpc_thread.join();
     }
+    ioc.stop();
     
     return 0;
   } catch (const std::exception& e) {

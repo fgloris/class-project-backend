@@ -13,6 +13,9 @@ set(BOOST_ROOT "/usr/local")
 set(Boost_INCLUDE_DIR "/usr/local/include")
 set(Boost_LIBRARY_DIR "/usr/local/lib")
 
+get_filename_component(user_proto "proto/user.proto" ABSOLUTE)
+get_filename_component(user_proto_path "${user_proto}" PATH)
+
 set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated")
 file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
 

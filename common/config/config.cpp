@@ -20,7 +20,7 @@ namespace config {
       .host = "localhost",
       .user = "root",
       .password = "114472988",
-      .db_name = "jmanime_db",
+      .db_name = "class_project",
       .charset = "utf8mb4",
     };
 
@@ -29,26 +29,9 @@ namespace config {
       50051
     };
 
-    video_service_ = {
-      .host = "0.0.0.0",
-      .port = 50052
-    };
-
-    streaming_ = {
-      .host = "0.0.0.0",
-      .port = 8080
-    };
-
     auth_ = {
       .jwt_secret = "your-secret-key",
       .jwt_expire_hours = 24
-    };
-
-    format_ = {
-      .format = "mp4",
-      .codec_lib = "libx264",
-      .codec = "h264",
-      .crf = 28
     };
 
     smtp_ = {
@@ -59,7 +42,5 @@ namespace config {
       .email_sender_name = "jmanime",
       .queue_max_size = 100,
     };
-
-    storage_path_ = "/home/ginger/Videos/jmanime";
   }
 }
