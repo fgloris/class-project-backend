@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package user_service;
+
+service UserService {
+  rpc ValidateEmail(ValidateEmailRequest) returns (ValidateEmailResponse) {};
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {};
+}
+
+message ValidateEmailRequest {
+  string email = 1;
+  string type = 2;
+}
+
+message ValidateEmailResponse {
+  bool send_code_success = 1;
+  string message = 2;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string user_id = 2;
+}
