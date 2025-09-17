@@ -81,13 +81,13 @@ int main(int argc, char** argv) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    ioc.stop();
-    grpc_server->Shutdown();
-
+    
     if (grpc_thread.joinable()) {
+      grpc_server->Shutdown();
       grpc_thread.join();
     }
     
+    ioc.stop();
     if (http_thread.joinable()) {
       http_thread.join();
     }
