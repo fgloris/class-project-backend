@@ -12,8 +12,18 @@
 #include "common/config/config.hpp"
 #include <sstream>
 
+std::atomic<bool> shutdown_requested{false};
+
+void signal_handler(int) {
+  std::cout<<"exit signal call on user_service."<<std::endl;
+  shutdown_requested.store(true);
+}
+
 int main(int argc, char** argv) {
   try {
+    std::signal(SIGINT, signal_handler);
+    std::signal(SIGTERM, signal_handler);
+
     const auto& cfg = config::Config::getInstance();
     const auto& service_config = cfg.getUserService();
     
@@ -25,8 +35,6 @@ int main(int argc, char** argv) {
     auto repository = std::make_shared<user_service::MysqlUserRepository>();
 
     auto email_sender = std::make_shared<user_service::SMTPEmailQueue>();
-
-    
 
     // 初始化认证服务
     auto auth_service = std::make_shared<user_service::AuthService>(
@@ -58,22 +66,33 @@ int main(int argc, char** argv) {
     
     std::cout << "HTTP Server listening on " << service_config.host << ":" << http_port << std::endl;
     
-    // 在单独线程运行grpc服务器
+    // 在单独线程运行grpc服务器和http服务器
     std::thread grpc_thread([&grpc_server]() {
       grpc_server->Wait();
     });
 
-    http_server.run();
-    ioc.run();
+    std::thread http_thread([&http_server, &ioc]() {
+      http_server.run();
+      ioc.run();
+    });
+    
+    // 主线程等待关闭信号
+    while (!shutdown_requested.load()) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
-    // 主线程运行HTTP服务器
-    
-    
+    ioc.stop();
+    grpc_server->Shutdown();
+
     if (grpc_thread.joinable()) {
       grpc_thread.join();
     }
-    ioc.stop();
     
+    if (http_thread.joinable()) {
+      http_thread.join();
+    }
+
+    std::cout << "user_service stopped successfully." << std::endl;
     return 0;
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;

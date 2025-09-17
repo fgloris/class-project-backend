@@ -48,10 +48,11 @@ void HttpServer::onAccept(beast::error_code ec, tcp::socket socket) {
     std::make_shared<HttpSession>(std::move(socket), api_handler_)->run();
   }
   
+  // 通过递归再次处理请求
   doAccept();
 }
 
-// HttpSession implementation
+// HttpSession 实现
 HttpSession::HttpSession(tcp::socket&& socket, std::shared_ptr<RestApiHandlerBase> api_handler)
   : stream_(std::move(socket)), api_handler_(api_handler) {}
 
